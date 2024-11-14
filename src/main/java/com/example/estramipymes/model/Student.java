@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data; 
       
@@ -17,15 +15,12 @@ public class Student {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role role_id;
+    @Column(name = "Role_id", nullable = false)
+    private int role_id; 
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "company_id", nullable = false)
-    private Company company_id;
+    @Column(name = "company_id", nullable = false)
+    private int company_id;
 
     @Column(name = "first_name", length = 50, nullable = false)
     private String first_name;
