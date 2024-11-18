@@ -15,12 +15,8 @@ public class Student {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
-    @Column(name = "Role_id", nullable = false)
-    private int role_id; 
-
-    @Column(name = "company_id", nullable = false)
-    private int company_id;
+    @Column(name = "student_id")
+    private Long  id;
 
     @Column(name = "first_name", length = 50, nullable = false)
     private String first_name;
@@ -35,5 +31,12 @@ public class Student {
     private String password;
 
     @Column(name = "phone", length = 50, nullable = false)
-    private String phone;    
+    private String phone;
+
+    @Column(name = "role_id")
+    private Long role_id;
+
+    @Column(name = "company_id")
+    private Long company_id;
+
 }
