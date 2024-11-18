@@ -7,5 +7,5 @@ import com.example.estramipymes.model.Role;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
-    Role findByDescription(String description);
+    Role findByDescription(Role.Description description);
 }

@@ -4,10 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-// import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.estramipymes.model.Company;
-// import com.example.estramipymes.service.CompanyService;
 import com.example.estramipymes.service.CompanyService;
+
 
 @RestController
 @RequestMapping("/company")
@@ -27,39 +25,52 @@ public class CompanyController {
     @Autowired
     private CompanyService companyService;
 
-    // Ver todas las empresas (para admin y profesor)
+    // Lists all the companies (this method is aimed to be used by teachers and admins only)
     @GetMapping("")
     public List<Company> getAllCompanies() {
         return companyService.getAllCompanies();
     }
 
-    // Ver sus datos
+    // Lists a company depending on its id (It is aimed to be available for each company and 
+    // show only results associated to their own id)
     @GetMapping("/{id}")
-    public Long getCompany(@PathVariable Long id) {
-        return id;
+    public Company getCompany(@PathVariable Long id) {
+        return companyService.getCompany(id);
     }
 
-    // Crear todos sus datos
+    // Creates all the data of a company entity (This expects to receive only name, email and password
+    // the id is auto generated and role_id is set to company)
     @PostMapping()
     public ResponseEntity<Company> createCompany(@RequestBody Company company) {
-        // Company newCompany = companyService.createCompany(company);
-        // if (company == null)
-        //     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        // return new ResponseEntity<>(newCompany, HttpStatus.OK);
+        Company newCompany = companyService.createCompany(company);
+
+        if (newCompany == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity<>(newCompany, HttpStatus.OK);
         
-        return new ResponseEntity<>(company, HttpStatus.OK);
     }
 
     // Actualizar TODOS sus datos
     @PutMapping("/{id}")
-    public Company updateCompany(@PathVariable Long id, @RequestBody Company company) {
-        return company;
+    public ResponseEntity<Company> updateCompany(@PathVariable Long id, @RequestBody Company company) {
+        
+        Company updatedCompany = companyService.updateCompany(id, company);
+
+        if (updatedCompany == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        return new ResponseEntity<>(updatedCompany, HttpStatus.OK);
     }
 
-    // Eliminar TODOS sus datos
+    // Deletes a whole register of a selected entity (This should work in the front end in any
+    // company profile with its id fixed, and for admin, any id available to select)
     @DeleteMapping("/{id}")
-    public String deleteCompany(@PathVariable Long id) {
-        return "Se ha eliminado la empresa";
+    public ResponseEntity<Company> deleteCompany(@PathVariable Long id) {
+
+        companyService.deleteCompany(id);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
     
     // Ver su profesor asignado
