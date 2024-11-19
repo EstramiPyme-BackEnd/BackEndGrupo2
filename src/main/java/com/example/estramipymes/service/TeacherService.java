@@ -2,14 +2,17 @@ package com.example.estramipymes.service;
 
 import java.util.List;
 
-import com.example.estramipymes.model.Teacher;
-import com.example.estramipymes.repository.TeacherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.estramipymes.exception.ResourceNotFoundException;
+import com.example.estramipymes.model.Company;
+import com.example.estramipymes.model.Role;
 import com.example.estramipymes.model.Teacher;
+import com.example.estramipymes.repository.CompanyRepository;
+import com.example.estramipymes.repository.RoleRepository;
 import com.example.estramipymes.repository.TeacherRepository;
+
 //import com.example.estramipymes.repository.TeacherRepository;
 
 @Service
@@ -18,69 +21,85 @@ public class TeacherService {
     @Autowired
     private TeacherRepository teacherRepository;
 
-    
+    @Autowired
+    private CompanyRepository companyRepository;
 
-    // Crear un profesor
-    public Teacher createTeacher(Teacher teacher) {
-        return TeacherRepository.save(teacher);
+    @Autowired
+    private RoleRepository roleRepository;
+
+    // @Autowired
+    // private TeacherRepository teacherRepository;
+
+    // Crear un estudiante
+    public Teacher createTeacher(Teacher teacher,String companyEmail) {
+        Teacher existingTeacher = teacherRepository.findByEmail(teacher.getEmail());
+        if (existingTeacher != null)
+            return null;
+
+        Role role = roleRepository.findByDescription(Role.Description.teacher);
+        if (role == null) {
+            throw new RuntimeException("El rol de estudiante no existe.");
+        }
+        teacher.setRole_id(role);
+        // Buscar la compañía basada en el email proporcionado
+        Company company = companyRepository.findByEmail(companyEmail);
+        if (company == null) {
+        throw new RuntimeException("No se encontró una compañía con el email proporcionado.");
+        }
+        // Asignar la entidad Company al estudiante
+        teacher.setCompany_id(company);
+
+        return teacherRepository.save(teacher);
     }
 
-    // Obtener los datos de un Profesor por ID
+    // Obtener los datos de un estudiante por ID
     public Teacher getTeacherById(Long id) {
-        return TeacherRepository.findById(id)
+        return teacherRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher not found with ID: " + id));
     }
 
-    // Obtener todos los profesores
+    // Obtener todos los estudiantes
     public List<Teacher> getAllTeachers() {
-        return TeacherRepository.findAll();
+        return teacherRepository.findAll();
     }
 
-    // Obtener el profesor asignado
-    // public Teacher getAssignedTeacher(Long TeacherId) {
-    //     Teacher Teacher = TeacherRepository.findById(TeacherId)
-    //             .orElseThrow(() -> new ResourceNotFoundException("Teacher not found with ID: " + TeacherId));
+    // Obtener el profesor asignado a un estudiante
+    // public Teacher getAssignedTeacher(Long teacherId) {
+    //     Teacher teacher = teacherRepository.findById(teacherId)
+    //             .orElseThrow(() -> new ResourceNotFoundException("Teacher not found with ID: " + teacherId));
 
-    //     Long companyId = Teacher.getCompany_id().getId();
+    //     Long companyId = teacher.getCompany_id().getId();
     //     Optional<Teacher> assignedTeacher = teacherRepository.findByCompanyId(companyId);
 
-    //     return assignedTeacher.orElseThrow(() -> new ResourceNotFoundException("No teacher assigned for Teacher ID: " + TeacherId));
+    //     return assignedTeacher.orElseThrow(() -> new ResourceNotFoundException("No teacher assigned for teacher ID: " + teacherId));
     // }
 
-    // Actualizar algunos datos del Profesor
-    public Teacher updateTeacherPartial(Long id, Teacher TeacherDetails) {
-        Teacher existingTeacher = TeacherRepository.findById(id)
+    // Actualizar algunos datos del estudiante
+    public Teacher updateTeacherPartial(Long id, Teacher teacherDetails) {
+        Teacher existingTeacher = teacherRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher not found with ID: " + id));
 
-        if (TeacherDetails.getFirst_name() != null) {
-            existingTeacher.setFirst_name(TeacherDetails.getFirst_name());
+        if (teacherDetails.getFirst_name() != null) {
+            existingTeacher.setFirst_name(teacherDetails.getFirst_name());
         }
-        if (TeacherDetails.getLast_name() != null) {
-            existingTeacher.setLast_name(TeacherDetails.getLast_name());
+        if (teacherDetails.getLast_name() != null) {
+            existingTeacher.setLast_name(teacherDetails.getLast_name());
         }
-        if (TeacherDetails.getEmail() != null) {
-            existingTeacher.setEmail(TeacherDetails.getEmail());
+        if (teacherDetails.getEmail() != null) {
+            existingTeacher.setEmail(teacherDetails.getEmail());
         }
-        if (TeacherDetails.getPhone() != null) {
-            existingTeacher.setPhone(TeacherDetails.getPhone());
+        if (teacherDetails.getPhone() != null) {
+            existingTeacher.setPhone(teacherDetails.getPhone());
         }
 
-        return TeacherRepository.save(existingTeacher);
+        return teacherRepository.save(existingTeacher);
     }
 
-    // Eliminar un Profesor por ID
+    // Eliminar un estudiante por ID
     public void deleteTeacher(Long id) {
-        if (!TeacherRepository.existsById(id)) {
+        if (!teacherRepository.existsById(id)) {
             throw new ResourceNotFoundException("Teacher not found with ID: " + id);
         }
-        TeacherRepository.deleteById(id);
-    }
-
-    public TeacherRepository getTeacherRepository() {
-        return TeacherRepository;
-    }
-
-    public void setTeacherRepository(TeacherRepository teacherRepository) {
-        TeacherRepository = teacherRepository;
+        teacherRepository.deleteById(id);
     }
 }
