@@ -91,6 +91,9 @@ public class TeacherService {
         if (teacherDetails.getPhone() != null) {
             existingTeacher.setPhone(teacherDetails.getPhone());
         }
+        if (teacherDetails.getPassword() != null) {
+            existingTeacher.setPassword(teacherDetails.getPassword());
+        }
 
         return teacherRepository.save(existingTeacher);
     }
