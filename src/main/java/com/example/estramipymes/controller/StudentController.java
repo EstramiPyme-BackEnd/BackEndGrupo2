@@ -1,8 +1,10 @@
 package com.example.estramipymes.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,9 +27,27 @@ public class StudentController {
 
     // Crear un estudiante
     @PostMapping
-    public ResponseEntity<Student> createStudent(@RequestBody Student student) {
-        Student createdStudent = studentService.createStudent(student);
-        return ResponseEntity.ok(createdStudent);
+    public ResponseEntity<Student> createStudent(@RequestBody Map<String, Object> payload) {
+        // Extraer datos del payload
+        String companyEmail = (String) payload.get("company_email");
+        if (companyEmail == null || companyEmail.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        Student student = new Student();
+        student.setFirst_name((String) payload.get("first_name"));
+        student.setLast_name((String) payload.get("last_name"));
+        student.setEmail((String) payload.get("email"));
+        student.setPassword((String) payload.get("password"));
+        student.setPhone((String) payload.get("phone"));
+
+        // Crear el estudiante usando el servicio
+        Student createdStudent = studentService.createStudent(student, companyEmail);
+
+        if (createdStudent == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(createdStudent, HttpStatus.CREATED);
     }
 
     // Ver los datos de un estudiante por ID

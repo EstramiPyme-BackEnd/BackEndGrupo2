@@ -7,6 +7,7 @@ import com.example.estramipymes.model.Student;
 
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Long> {
+    Student findByEmail(String email);
 }
 
 

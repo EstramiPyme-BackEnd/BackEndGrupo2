@@ -1,11 +1,10 @@
 package com.example.estramipymes.repository;
 
-import java.util.Optional;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.example.estramipymes.model.Admin;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface AdminRepository extends JpaRepository<Admin, Integer> {
-    Optional<Admin> findByEmail(String email);
+@Repository
+public interface AdminRepository extends JpaRepository<Admin, Long> {
+   
 }
