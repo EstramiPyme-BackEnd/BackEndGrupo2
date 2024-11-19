@@ -11,7 +11,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "admins")
+@Table(name = "roles")
 public class Role {
 
     @Id
@@ -19,7 +19,7 @@ public class Role {
     private Long id;
 
     public enum Description{
-        admin, student, profesor, company
+        admin, student, teacher, company
     }
 
     @Enumerated(EnumType.STRING)
