@@ -17,15 +17,16 @@ public class Teacher {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "student_id")
     private Long id;
 
-    @ManyToOne(optional = false)
+  /*  @ManyToOne(optional = false)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role_id;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "company_id", nullable = false)
-    private Company company_id;
+    private Company company_id; */
 
     @Column(name = "first_name", length = 50, nullable = false)
     private String first_name;
@@ -40,5 +41,11 @@ public class Teacher {
     private String password;
 
     @Column(name = "phone", length = 50, nullable = false)
-    private String phone;    
+    private String phone;
+
+    @Column(name = "role_id")
+    private Long role_id;
+
+    @Column(name = "company_id")
+    private Long company_id;
 }
