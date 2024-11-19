@@ -1,5 +1,4 @@
 package com.example.estramipymes.model;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,7 +11,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "admins")
+@Table(name = "companies")
 public class Admin {
 
     @Id
