@@ -33,4 +33,3 @@ public class Company {
     private String password;
     
 }
-
