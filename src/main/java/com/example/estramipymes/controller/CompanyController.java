@@ -51,7 +51,7 @@ public class CompanyController {
         
     }
 
-    // Actualizar TODOS sus datos
+    // Updates any or some data from a company entity
     @PutMapping("/{id}")
     public ResponseEntity<Company> updateCompany(@PathVariable Long id, @RequestBody Company company) {
         
