@@ -91,6 +91,10 @@ public class StudentService {
         if (studentDetails.getPhone() != null) {
             existingStudent.setPhone(studentDetails.getPhone());
         }
+        if (studentDetails.getPassword() != null) {
+            existingStudent.setPassword(studentDetails.getPassword());
+        }
+
 
         return studentRepository.save(existingStudent);
     }
