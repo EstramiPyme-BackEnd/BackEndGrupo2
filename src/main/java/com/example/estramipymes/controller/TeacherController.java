@@ -23,41 +23,41 @@ public class TeacherController {
     @Autowired
     private TeacherService TeacherService;
 
-    // Crear un estudiante
+    // Crear un Profesor
     @PostMapping
     public ResponseEntity<Teacher> createTeacher(@RequestBody Teacher Teacher) {
         Teacher createdTeacher = TeacherService.createTeacher(Teacher);
         return ResponseEntity.ok(createdTeacher);
     }
 
-    // Ver los datos de un estudiante por ID
+    // Ver los datos de un Profesor por ID
     @GetMapping("/{id}")
     public ResponseEntity<Teacher> getTeacherById(@PathVariable Long id) {
         Teacher Teacher = TeacherService.getTeacherById(id);
         return ResponseEntity.ok(Teacher);
     }
 
-    // Ver todos los estudiantes
+    // Ver todos los Profesores
     @GetMapping
     public ResponseEntity<List<Teacher>> getAllTeachers() {
         List<Teacher> Teachers = TeacherService.getAllTeachers();
         return ResponseEntity.ok(Teachers);
     }
 
-    // Ver el profesor asignado al estudiante
+    // Ver el profesor asignado
     // @GetMapping("/teacher/{id}")
     // public ResponseEntity<?> getAssignedTeacher(@PathVariable Long id) {
     //     return ResponseEntity.ok(TeacherService.getAssignedTeacher(id));
     // }
 
-    // Actualizar algunos datos del estudiante
+    // Actualizar algunos datos del Profesor
     @PutMapping("/{id}")
     public ResponseEntity<Teacher> updateTeacherPartial(@PathVariable Long id, @RequestBody Teacher Teacher) {
         Teacher updatedTeacher = TeacherService.updateTeacherPartial(id, Teacher);
         return ResponseEntity.ok(updatedTeacher);
     }
 
-    // Eliminar todos los datos del estudiante
+    // Eliminar todos los datos del Profesor
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTeacher(@PathVariable Long id) {
         TeacherService.deleteTeacher(id);

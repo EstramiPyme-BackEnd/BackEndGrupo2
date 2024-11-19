@@ -20,12 +20,12 @@ public class TeacherService {
 
     
 
-    // Crear un proesor
+    // Crear un profesor
     public Teacher createTeacher(Teacher teacher) {
         return TeacherRepository.save(teacher);
     }
 
-    // Obtener los datos de un estudiante por ID
+    // Obtener los datos de un Profesor por ID
     public Teacher getTeacherById(Long id) {
         return TeacherRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher not found with ID: " + id));
@@ -36,7 +36,7 @@ public class TeacherService {
         return TeacherRepository.findAll();
     }
 
-    // Obtener el profesor asignado a un estudiante
+    // Obtener el profesor asignado
     // public Teacher getAssignedTeacher(Long TeacherId) {
     //     Teacher Teacher = TeacherRepository.findById(TeacherId)
     //             .orElseThrow(() -> new ResourceNotFoundException("Teacher not found with ID: " + TeacherId));
@@ -47,7 +47,7 @@ public class TeacherService {
     //     return assignedTeacher.orElseThrow(() -> new ResourceNotFoundException("No teacher assigned for Teacher ID: " + TeacherId));
     // }
 
-    // Actualizar algunos datos del estudiante
+    // Actualizar algunos datos del Profesor
     public Teacher updateTeacherPartial(Long id, Teacher TeacherDetails) {
         Teacher existingTeacher = TeacherRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher not found with ID: " + id));
@@ -68,7 +68,7 @@ public class TeacherService {
         return TeacherRepository.save(existingTeacher);
     }
 
-    // Eliminar un estudiante por ID
+    // Eliminar un Profesor por ID
     public void deleteTeacher(Long id) {
         if (!TeacherRepository.existsById(id)) {
             throw new ResourceNotFoundException("Teacher not found with ID: " + id);
