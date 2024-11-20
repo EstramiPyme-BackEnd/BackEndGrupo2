@@ -1,6 +1,7 @@
 package com.example.estramipymes.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,8 @@ import com.example.estramipymes.model.Student;
 import com.example.estramipymes.repository.CompanyRepository;
 import com.example.estramipymes.repository.RoleRepository;
 import com.example.estramipymes.repository.StudentRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 //import com.example.estramipymes.repository.TeacherRepository;
 
@@ -26,31 +29,41 @@ public class StudentService {
 
     @Autowired
     private RoleRepository roleRepository;
-
+    @Autowired
+private PasswordEncoder passwordEncoder;
     // @Autowired
     // private TeacherRepository teacherRepository;
 
     // Crear un estudiante
-    public Student createStudent(Student student,String companyEmail) {
-        Student existingStudent = studentRepository.findByEmail(student.getEmail());
-        if (existingStudent != null)
-            return null;
-
-        Role role = roleRepository.findByDescription(Role.Description.student);
-        if (role == null) {
+    public Student createStudent(Student student, String companyEmail) {
+        // Verificar si el estudiante ya existe basado en el email
+        Optional<Student> existingStudent = studentRepository.findByEmail(student.getEmail());
+        if (existingStudent.isPresent()) {
+            throw new RuntimeException("El estudiante con el email proporcionado ya existe.");
+        }
+    
+        // Buscar el rol de estudiante
+        Optional<Role> role = roleRepository.findByDescription(Role.Description.student);
+        if (role.isEmpty()) {
             throw new RuntimeException("El rol de estudiante no existe.");
         }
-        student.setRole_id(role);
+        student.setRole_id(role.get());
+    
         // Buscar la compañía basada en el email proporcionado
-        Company company = companyRepository.findByEmail(companyEmail);
-        if (company == null) {
-        throw new RuntimeException("No se encontró una compañía con el email proporcionado.");
+        Optional<Company> company = companyRepository.findByEmail(companyEmail);
+        if (company.isEmpty()) {
+            throw new RuntimeException("No se encontró una compañía con el email proporcionado.");
         }
-        // Asignar la entidad Company al estudiante
-        student.setCompany_id(company);
+        student.setCompany_id(company.get());
 
+        // Codificar la contraseña antes de guardarla
+        String encodedPassword = passwordEncoder.encode(student.getPassword());
+        student.setPassword(encodedPassword);
+    
+        // Guardar y devolver el nuevo estudiante
         return studentRepository.save(student);
     }
+    
 
     // Obtener los datos de un estudiante por ID
     public Student getStudentById(Long id) {
@@ -91,8 +104,10 @@ public class StudentService {
         if (studentDetails.getPhone() != null) {
             existingStudent.setPhone(studentDetails.getPhone());
         }
+        // Codificar la contraseña si se está actualizando
         if (studentDetails.getPassword() != null) {
-            existingStudent.setPassword(studentDetails.getPassword());
+            String encodedPassword = passwordEncoder.encode(studentDetails.getPassword());
+            existingStudent.setPassword(encodedPassword);
         }
 
 

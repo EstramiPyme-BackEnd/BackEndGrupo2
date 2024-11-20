@@ -5,9 +5,12 @@ import org.springframework.stereotype.Repository;
 
 import com.example.estramipymes.model.Student;
 
+import java.util.Optional;
+
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Long> {
-    Student findByEmail(String email);
+    Optional<Student> findByEmail(String email);
+
 }
 
 

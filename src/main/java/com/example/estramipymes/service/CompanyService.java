@@ -31,16 +31,16 @@ public class CompanyService {
 
     // Create (POST) a new company
     public Company createCompany(Company company) {
-        Company existingCompany = companyRepository.findByEmail(company.getEmail());
-        if (existingCompany != null)
-            return null;
+        companyRepository.findByEmail(company.getEmail())
+                .ifPresent(existing -> {
+                    throw new RuntimeException("A company with this email already exists.");
+                });
 
-        Role role = roleRepository.findByDescription(Role.Description.company);
+        Role role = roleRepository.findByDescription(Role.Description.company)
+                .orElseThrow(() -> new RuntimeException("Company role does not exist."));
 
         company.setRole_id(role);
-
         return companyRepository.save(company);
-        // Falta terminar esto
     }
     
     // Remove (DELETE) an existing company

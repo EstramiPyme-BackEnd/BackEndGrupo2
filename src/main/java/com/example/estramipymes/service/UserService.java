@@ -35,11 +35,11 @@ public class UserService implements UserDetailsService {
         // Primero buscar en estudiantes
         var student = studentRepository.findByEmail(email);
         if (student.isPresent()) {
-            return org.springframework.security.core.userdetails.User
-                .withUsername(student.get().getEmail())
-                .password(student.get().getPassword())
-                .roles("STUDENT")
-                .build();
+        return org.springframework.security.core.userdetails.User
+        .withUsername(student.get().getEmail())
+        .password(student.get().getPassword())
+        .roles("STUDENT")
+        .build();
         }
         // buscar company
         var company = companyRepository.findByEmail(email);

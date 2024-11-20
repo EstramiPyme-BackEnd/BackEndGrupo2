@@ -26,10 +26,10 @@ public Role getRole(Long id) {
 
 // Create (POST) a new role
 public Role createRole(Role role) {
-    Role existingRole = roleRepository.findByDescription(role.getDescription());
-    if (existingRole != null)
-        return null;
-
+    roleRepository.findByDescription(role.getDescription())
+            .ifPresent(existing -> {
+                throw new RuntimeException("A role with this description already exists.");
+            });
     return roleRepository.save(role);
 }
 

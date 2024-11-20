@@ -1,6 +1,7 @@
 package com.example.estramipymes.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.example.estramipymes.exception.ResourceNotFoundException;
 import com.example.estramipymes.model.Company;
 import com.example.estramipymes.model.Role;
+import com.example.estramipymes.model.Teacher;
 import com.example.estramipymes.model.Teacher;
 import com.example.estramipymes.repository.CompanyRepository;
 import com.example.estramipymes.repository.RoleRepository;
@@ -30,25 +32,29 @@ public class TeacherService {
     // @Autowired
     // private TeacherRepository teacherRepository;
 
-    // Crear un estudiante
-    public Teacher createTeacher(Teacher teacher,String companyEmail) {
-        Teacher existingTeacher = teacherRepository.findByEmail(teacher.getEmail());
-        if (existingTeacher != null)
-            return null;
-
-        Role role = roleRepository.findByDescription(Role.Description.teacher);
-        if (role == null) {
+    // Crear un Teacher
+    public Teacher createTeacher(Teacher teacher, String companyEmail) {
+        // Verificar si el estudiante ya existe basado en el email
+        Optional<Teacher> existingTeacher = teacherRepository.findByEmail(teacher.getEmail());
+        if (existingTeacher.isPresent()) {
+            throw new RuntimeException("El estudiante con el email proporcionado ya existe.");
+        }
+    
+        // Buscar el rol de estudiante
+        Optional<Role> role = roleRepository.findByDescription(Role.Description.teacher);
+        if (role.isEmpty()) {
             throw new RuntimeException("El rol de estudiante no existe.");
         }
-        teacher.setRole_id(role);
+        teacher.setRole_id(role.get());
+    
         // Buscar la compañía basada en el email proporcionado
-        Company company = companyRepository.findByEmail(companyEmail);
-        if (company == null) {
-        throw new RuntimeException("No se encontró una compañía con el email proporcionado.");
+        Optional<Company> company = companyRepository.findByEmail(companyEmail);
+        if (company.isEmpty()) {
+            throw new RuntimeException("No se encontró una compañía con el email proporcionado.");
         }
-        // Asignar la entidad Company al estudiante
-        teacher.setCompany_id(company);
-
+        teacher.setCompany_id(company.get());
+    
+        // Guardar y devolver el nuevo estudiante
         return teacherRepository.save(teacher);
     }
 
