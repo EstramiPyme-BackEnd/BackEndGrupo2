@@ -36,7 +36,7 @@ public class CompanyService {
     // Create (POST) a new company
     public Company createCompany(Company company) {
         System.out.println("Company object received: " + company);
-        System.out.println("Company name: " + company.getName());
+        System.out.println("Company company_name: " + company.getName());
         companyRepository.findByEmail(company.getEmail())
                 .ifPresent(existing -> {
                     throw new RuntimeException("A company with this email already exists.");
@@ -49,7 +49,7 @@ public class CompanyService {
         // Codificar la contraseña antes de guardarla
         String encodedPassword = passwordEncoder.encode(company.getPassword());
         company.setPassword(encodedPassword);
-        System.out.println("Company name: " + company.getName());
+        System.out.println("Company company_name: " + company.getName());
         return companyRepository.save(company);
     }
     
