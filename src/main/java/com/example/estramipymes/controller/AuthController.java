@@ -1,16 +1,17 @@
 package com.example.estramipymes.controller;
 
-import com.example.estramipymes.dto.LoginRequest;
-import com.example.estramipymes.dto.LoginResponse;
-import com.example.estramipymes.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.estramipymes.dto.LoginRequest;
+import com.example.estramipymes.dto.LoginResponse;
+import com.example.estramipymes.service.AuthService;
+
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AuthService authService;

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.estramipymes.exception.ResourceNotFoundException;
@@ -13,8 +14,6 @@ import com.example.estramipymes.model.Student;
 import com.example.estramipymes.repository.CompanyRepository;
 import com.example.estramipymes.repository.RoleRepository;
 import com.example.estramipymes.repository.StudentRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 //import com.example.estramipymes.repository.TeacherRepository;
 
@@ -30,7 +29,7 @@ public class StudentService {
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
-private PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
     // @Autowired
     // private TeacherRepository teacherRepository;
 

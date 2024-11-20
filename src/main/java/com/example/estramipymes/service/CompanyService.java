@@ -3,6 +3,7 @@ package com.example.estramipymes.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.estramipymes.model.Company;
@@ -19,6 +20,9 @@ public class CompanyService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     // Read (GET) all the companies
     public List<Company> getAllCompanies() {
         return companyRepository.findAll();
@@ -31,6 +35,8 @@ public class CompanyService {
 
     // Create (POST) a new company
     public Company createCompany(Company company) {
+        System.out.println("Company object received: " + company);
+        System.out.println("Company name: " + company.getName());
         companyRepository.findByEmail(company.getEmail())
                 .ifPresent(existing -> {
                     throw new RuntimeException("A company with this email already exists.");
@@ -40,6 +46,10 @@ public class CompanyService {
                 .orElseThrow(() -> new RuntimeException("Company role does not exist."));
 
         company.setRole_id(role);
+        // Codificar la contraseña antes de guardarla
+        String encodedPassword = passwordEncoder.encode(company.getPassword());
+        company.setPassword(encodedPassword);
+        System.out.println("Company name: " + company.getName());
         return companyRepository.save(company);
     }
     

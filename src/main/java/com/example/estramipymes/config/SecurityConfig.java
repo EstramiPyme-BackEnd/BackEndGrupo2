@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -52,7 +53,7 @@ public class SecurityConfig {
         http
             .csrf().disable() // Deshabilita CSRF (puedes habilitarlo si lo necesitas)
             .authorizeHttpRequests((authorize) -> authorize
-                .requestMatchers("/api/auth/**").permitAll() // Permite el acceso sin autenticación a estas rutas
+                .requestMatchers("auth/**","company/**","role/**").permitAll() // Permite el acceso sin autenticación a estas rutas
                 .anyRequest().authenticated() // Requiere autenticación para cualquier otra ruta
             )
             .httpBasic(); // Usa autenticación básica (puedes configurar JWT si es necesario)
