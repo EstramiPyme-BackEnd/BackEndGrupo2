@@ -26,28 +26,15 @@ public class StudentController {
     private StudentService studentService;
 
     // Crear un estudiante
-    @PostMapping
-    public ResponseEntity<Student> createStudent(@RequestBody Map<String, Object> payload) {
-        // Extraer datos del payload
-        String companyEmail = (String) payload.get("company_email");
-        if (companyEmail == null || companyEmail.isEmpty()) {
+    @PostMapping()
+    public ResponseEntity<Student> createStudent(@RequestBody Student student) {
+        Student newStudent = studentService.createStudent(student);
+
+        if (newStudent == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
 
-        Student student = new Student();
-        student.setFirst_name((String) payload.get("first_name"));
-        student.setLast_name((String) payload.get("last_name"));
-        student.setEmail((String) payload.get("email"));
-        student.setPassword((String) payload.get("password"));
-        student.setPhone((String) payload.get("phone"));
-
-        // Crear el estudiante usando el servicio
-        Student createdStudent = studentService.createStudent(student, companyEmail);
-
-        if (createdStudent == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(createdStudent, HttpStatus.CREATED);
+        return new ResponseEntity<>(newStudent, HttpStatus.OK);
+        
     }
 
     // Ver los datos de un estudiante por ID
@@ -64,13 +51,6 @@ public class StudentController {
         return ResponseEntity.ok(students);
     }
 
-    // Ver el profesor asignado al estudiante
-    // @GetMapping("/teacher/{id}")
-    // public ResponseEntity<?> getAssignedTeacher(@PathVariable Long id) {
-    //     return ResponseEntity.ok(studentService.getAssignedTeacher(id));
-    // }
-
-    // Actualizar algunos datos del estudiante
     @PutMapping("/{id}")
     public ResponseEntity<Student> updateStudentPartial(@PathVariable Long id, @RequestBody Student student) {
         Student updatedStudent = studentService.updateStudentPartial(id, student);
