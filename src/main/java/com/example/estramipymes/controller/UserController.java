@@ -38,43 +38,39 @@ public class UserController {
         return userService.getUser(id);
     }
 
-    // // Creates all the data of a user entity (This expects to receive only name, email and password
-    // // the id is auto generated and role_id is set to user)
-    // @PostMapping()
-    // public ResponseEntity<User> createUser(@RequestBody User user) {
-    //     User newUser = userService.createUser(user);
+    // Creates all the data of a user entity (This expects to receive only name, email and password
+    // the id is auto generated and role_id is set to user)
+    @PostMapping()
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        User newUser = userService.createUser(user);
 
-    //     if (newUser == null)
-    //         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (newUser == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-    //     return new ResponseEntity<>(newUser, HttpStatus.OK);
+        return new ResponseEntity<>(newUser, HttpStatus.OK);
         
-    // }
+    }
 
-    // // Updates any or some data from a user entity
-    // @PutMapping("/{id}")
-    // public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+    // Updates any or some data from a user entity
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
         
-    //     User updatedUser = userService.updateUser(id, user);
+        User updatedUser = userService.updateUser(id, user);
 
-    //     if (updatedUser == null)
-    //         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (updatedUser == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-    //     return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-    // }
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
 
-    // // Deletes a whole register of a selected entity (This should work in the front end in any
-    // // user profile with its id fixed, and for admin, any id available to select)
-    // @DeleteMapping("/{id}")
-    // public ResponseEntity<User> deleteUser(@PathVariable Long id) {
+    // Deletes a whole register of a selected entity (This should work in the front end in any
+    // user profile with its id fixed, and for admin, any id available to select)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<User> deleteUser(@PathVariable Long id) {
 
-    //     userService.deleteUser(id);
+        userService.deleteUser(id);
 
-    //     return new ResponseEntity<>(HttpStatus.OK);
-    // }
-    
-    // Ver su profesor asignado
-
-    // Ver su estudiante asignado
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     
 }
