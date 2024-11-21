@@ -1,7 +1,6 @@
 package com.example.estramipymes.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,31 +24,17 @@ public class TeacherController {
     @Autowired
     private TeacherService teacherService;
 
-    // Crear un Profesor
-     @PostMapping
-    public ResponseEntity<Teacher> createTeacher(@RequestBody Map<String, Object> payload) {
-        // Extraer datos del payload
-        String companyEmail = (String) payload.get("company_email");
-        if (companyEmail == null || companyEmail.isEmpty()) {
+     // Crear un Profesor
+    @PostMapping()
+    public ResponseEntity<Teacher> createTeacher(@RequestBody Teacher teacher) {
+        Teacher newTeacher = teacherService.createTeacher(teacher);
+
+        if (newTeacher == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
 
-        Teacher teacher = new Teacher();
-        teacher.setFirst_name((String) payload.get("first_name"));
-        teacher.setLast_name((String) payload.get("last_name"));
-        teacher.setEmail((String) payload.get("email"));
-        teacher.setPassword((String) payload.get("password"));
-        teacher.setPhone((String) payload.get("phone"));
-
-        // Crear el estudiante usando el servicio
-        Teacher createdTeacher = teacherService.createTeacher(teacher, companyEmail);
-
-        if (createdTeacher == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(createdTeacher, HttpStatus.CREATED);
+        return new ResponseEntity<>(newTeacher, HttpStatus.OK);
+        
     }
-
 
     // Ver los datos de un Profesor por ID
     @GetMapping("/{id}")
@@ -64,12 +49,6 @@ public class TeacherController {
         List<Teacher> Teachers = teacherService.getAllTeachers();
         return ResponseEntity.ok(Teachers);
     }
-
-    // Ver el profesor asignado
-    // @GetMapping("/teacher/{id}")
-    // public ResponseEntity<?> getAssignedTeacher(@PathVariable Long id) {
-    //     return ResponseEntity.ok(TeacherService.getAssignedTeacher(id));
-    // }
 
     // Actualizar algunos datos del Profesor
     @PutMapping("/{id}")
