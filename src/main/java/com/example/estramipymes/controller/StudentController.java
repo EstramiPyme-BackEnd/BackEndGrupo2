@@ -3,6 +3,7 @@ package com.example.estramipymes.controller;
 import java.util.List;
 import java.util.Map;
 
+import com.example.estramipymes.dto.StudentDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,10 +53,11 @@ public class StudentController {
 
     // Ver los datos de un estudiante por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Student> getStudentById(@PathVariable Long id) {
-        Student student = studentService.getStudentById(id);
-        return ResponseEntity.ok(student);
+    public ResponseEntity<StudentDTO> getStudentById(@PathVariable Long id) {
+        StudentDTO studentDTO = studentService.getStudentById(id);
+        return ResponseEntity.ok(studentDTO);
     }
+
 
     // Ver todos los estudiantes
     @GetMapping

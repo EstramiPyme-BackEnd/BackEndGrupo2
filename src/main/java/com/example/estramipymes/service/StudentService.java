@@ -2,6 +2,7 @@ package com.example.estramipymes.service;
 
 import java.util.List;
 
+import com.example.estramipymes.dto.StudentDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,10 +54,20 @@ public class StudentService {
     }
 
     // Obtener los datos de un estudiante por ID
-    public Student getStudentById(Long id) {
-        return studentRepository.findById(id)
+    public StudentDTO getStudentById(Long id) {
+        Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found with ID: " + id));
+
+        // Crear y devolver el DTO
+        return new StudentDTO(
+                String.valueOf(student.getId()),
+                student.getEmail(),
+                student.getFirstName() + " " + student.getLastName(),
+                true // Ajusta la lógica según corresponda
+        );
     }
+
+
 
     // Obtener todos los estudiantes
     public List<Student> getAllStudents() {

@@ -44,4 +44,11 @@ public class Student {
     @Column(name = "phone", length = 50, nullable = false)
     private String phone;
 
+    public String getFirstName() {
+        return String.format("%s %s", first_name);
+    }
+
+    public String getLastName() {
+        return String.format("%s %s", last_name);
+    }
 }
