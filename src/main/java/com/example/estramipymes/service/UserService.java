@@ -1,5 +1,6 @@
 package com.example.estramipymes.service;
 
+// import java.time.YearMonth;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,11 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    // Read (GET) a user by email
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     // Read (GET) a user by ID
     public User getUser(Long id) {
         return userRepository.findById(id).orElse(null);
@@ -29,6 +35,17 @@ public class UserService {
         User existingUser = userRepository.findByEmail(user.getEmail());
         if (existingUser != null)
             return null;
+
+        // YearMonth currentMonth = YearMonth.now();
+        user.setRegisterDate("2024-11");
+
+        if (user.getIsBookDownloaded() == null) {
+            user.setIsBookDownloaded(false);
+        }
+
+        if (user.getIsTestDone() == null) {
+            user.setIsTestDone(false);
+        }
 
         return userRepository.save(user);
     }
@@ -56,7 +73,8 @@ public class UserService {
         existingUser.setSector(user.getSector() == null ? existingUser.getSector() : user.getSector());
         existingUser.setRegisterDate(user.getRegisterDate() == null ? existingUser.getRegisterDate() : user.getRegisterDate());
         existingUser.setIsBookDownloaded(user.getIsBookDownloaded() == null ? existingUser.getIsBookDownloaded() : user.getIsBookDownloaded());
-        existingUser.setIsTestDone(user.getIsTestDone() == null ? existingUser.getIsTestDone() : user.getIsTestDone());       
+        existingUser.setIsTestDone(user.getIsTestDone() == null ? existingUser.getIsTestDone() : user.getIsTestDone());    
+   
 
 
         return userRepository.save(existingUser);

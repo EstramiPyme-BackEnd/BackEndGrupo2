@@ -1,5 +1,6 @@
 package com.example.estramipymes.controller;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.estramipymes.model.User;
@@ -19,23 +21,38 @@ import com.example.estramipymes.service.UserService;
 
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/usuarios")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
     // Lists all the users (this method is aimed to be used by teachers and admins only)
-    @GetMapping("")
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
-    }
+    // @GetMapping("")
+    // public List<User> getAllUsers() {
+    //     return userService.getAllUsers();
+    // }
 
     // Lists a user depending on its id (It is aimed to be available for each user and 
     // show only results associated to their own id)
     @GetMapping("/{id}")
     public User getUser(@PathVariable Long id) {
         return userService.getUser(id);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<User>> getUserByEmail(@RequestParam(required = false) String email) {
+        if (email != null) {
+            User user = userService.getUserByEmail(email);
+            if (user != null) {
+                return ResponseEntity.ok(Collections.singletonList(user));
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } else {
+            return ResponseEntity.ok(userService.getAllUsers());
+        }
+
     }
 
     // Creates all the data of a user entity (This expects to receive only name, email and password

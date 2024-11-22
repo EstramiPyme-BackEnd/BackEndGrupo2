@@ -1,6 +1,7 @@
 package com.example.estramipymes.model;
 
-import java.time.LocalDate;
+// import java.time.YearMonth;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,12 +39,12 @@ public class User {
     private Integer sector;
     
     @Column(name = "registerDate", length = 25, nullable = false)
-    private LocalDate registerDate;
+    private String registerDate;
 
     @Column(name = "isBookDownloaded", length = 25, nullable = false)
     private Boolean isBookDownloaded;
 
     @Column(name = "isTestDone", length = 25, nullable = false)
-    private Boolean isTestDone;
-    
+    private Boolean isTestDone;    
 }
+
