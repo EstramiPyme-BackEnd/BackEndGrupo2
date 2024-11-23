@@ -1,15 +1,13 @@
 package com.example.estramipymes.service;
 
-import com.example.estramipymes.model.Admin;
-import com.example.estramipymes.repository.AdminRepository;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
-
-import java.util.List;
+import com.example.estramipymes.model.Admin;
+import com.example.estramipymes.repository.AdminRepository;
+import com.example.estramipymes.util.EncryptionUtil;
 
 @Service
 public class AdminService {
@@ -19,13 +17,25 @@ public class AdminService {
 
     // Crear Admin
     public Admin createAdmin(Admin admin) {
+
+        try {
+            admin.setPassword(EncryptionUtil.encrypt(admin.getPassword())); // Encriptar contraseña
+        } catch (Exception e) {
+            throw new RuntimeException("Error encrypting password", e);
+        }
         return adminRepository.save(admin);
     }
 
     // Obtener Admin por ID
     public Admin getAdminById(Long id) {
-        return adminRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin no encontrado con ID: " + id));
+        Admin admin = adminRepository.findById(id).orElse(null);
+        if (admin != null) {
+            try {
+                admin.setPassword(admin.getDecryptedPassword());
+            } catch (Exception ignored) {
+            }
+        }
+        return admin;
     }
 
     // Actualizar Admin por ID
@@ -37,7 +47,13 @@ public class AdminService {
         return null;
 
         existingAdmin.setEmail(admin.getEmail() == null ? existingAdmin.getEmail() : admin.getEmail());
-        existingAdmin.setPassword(admin.getPassword() == null ? existingAdmin.getPassword() : admin.getPassword());
+        if (admin.getPassword() != null) {
+            try {
+                existingAdmin.setPassword(EncryptionUtil.encrypt(admin.getPassword()));
+            } catch (Exception e) {
+                throw new RuntimeException("Error encrypting password", e);
+            }
+        }
 
         return adminRepository.save(existingAdmin);
     }
@@ -48,7 +64,14 @@ public class AdminService {
     }
     // Obtener lista de Admins
     public List<Admin> getAllAdmins() {
-        return adminRepository.findAll();
+        List<Admin> admins = adminRepository.findAll();
+        admins.forEach(admin -> {
+            try {
+                admin.setPassword(admin.getDecryptedPassword());
+            } catch (Exception ignored) {
+            }
+        });
+        return admins;
         }
     
 }
