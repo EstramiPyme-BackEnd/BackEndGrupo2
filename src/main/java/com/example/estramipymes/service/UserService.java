@@ -8,26 +8,48 @@ import org.springframework.stereotype.Service;
 
 import com.example.estramipymes.model.User;
 import com.example.estramipymes.repository.UserRepository;
+import com.example.estramipymes.util.EncryptionUtil;
 
 @Service
 public class UserService {
-    
-    @Autowired
+  
+     @Autowired
     private UserRepository userRepository;
 
     // Read (GET) all the users
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        List<User> users = userRepository.findAll();
+        users.forEach(user -> {
+            try {
+                user.setPassword(user.getDecryptedPassword());
+            } catch (Exception ignored) {
+            }
+        });
+        return users;
     }
 
     // Read (GET) a user by email
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email);
+        if (user != null) {
+            try {
+                user.setPassword(user.getDecryptedPassword());
+            } catch (Exception ignored) {
+            }
+        }
+        return user;
     }
 
     // Read (GET) a user by ID
     public User getUser(Long id) {
-        return userRepository.findById(id).orElse(null);
+        User user = userRepository.findById(id).orElse(null);
+        if (user != null) {
+            try {
+                user.setPassword(user.getDecryptedPassword());
+            } catch (Exception ignored) {
+            }
+        }
+        return user;
     }
 
     // Create (POST) a new user
@@ -46,7 +68,12 @@ public class UserService {
         if (user.getIsTestDone() == null) {
             user.setIsTestDone(false);
         }
-
+        // Encriptar la contraseña
+        try {
+            user.setPassword(EncryptionUtil.encrypt(user.getPassword())); // Encriptar contraseña
+        } catch (Exception e) {
+            throw new RuntimeException("Error encrypting password", e);
+        }
         return userRepository.save(user);
     }
     
@@ -67,16 +94,19 @@ public class UserService {
 
         existingUser.setName(user.getName() == null ? existingUser.getName() : user.getName());
         existingUser.setEmail(user.getEmail() == null ? existingUser.getEmail() : user.getEmail());
-        existingUser.setPassword(user.getPassword() == null ? existingUser.getPassword() : user.getPassword());
         existingUser.setTypeUser(user.getTypeUser() == null ? existingUser.getTypeUser() : user.getTypeUser());
         existingUser.setSizeCompany(user.getSizeCompany() == null ? existingUser.getSizeCompany() : user.getSizeCompany());
         existingUser.setSector(user.getSector() == null ? existingUser.getSector() : user.getSector());
         existingUser.setRegisterDate(user.getRegisterDate() == null ? existingUser.getRegisterDate() : user.getRegisterDate());
         existingUser.setIsBookDownloaded(user.getIsBookDownloaded() == null ? existingUser.getIsBookDownloaded() : user.getIsBookDownloaded());
         existingUser.setIsTestDone(user.getIsTestDone() == null ? existingUser.getIsTestDone() : user.getIsTestDone());    
-   
-
-
+        if (user.getPassword() != null) {
+            try {
+                existingUser.setPassword(EncryptionUtil.encrypt(user.getPassword()));
+            } catch (Exception e) {
+                throw new RuntimeException("Error encrypting password", e);
+            }
+        }
         return userRepository.save(existingUser);
     }
 }
