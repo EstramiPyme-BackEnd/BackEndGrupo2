@@ -1,6 +1,8 @@
 package com.example.estramipymes.service;
 
 // import java.time.YearMonth;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +14,9 @@ import com.example.estramipymes.util.EncryptionUtil;
 
 @Service
 public class UserService {
-  
-     @Autowired
+
+    
+    @Autowired
     private UserRepository userRepository;
 
     // Read (GET) all the users
@@ -52,14 +55,19 @@ public class UserService {
         return user;
     }
 
+    public static void assignCurrentFormattedDate(User user) {
+        LocalDate currentDate = LocalDate.now();  // Obtiene la fecha actual
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");  // Formato deseado
+        user.setRegisterDate(currentDate.format(formatter));  // Asigna la fecha formateada
+    }
+
     // Create (POST) a new user
     public User createUser(User user) {
         User existingUser = userRepository.findByEmail(user.getEmail());
         if (existingUser != null)
             return null;
 
-        // YearMonth currentMonth = YearMonth.now();
-        user.setRegisterDate("2024-11");
+           assignCurrentFormattedDate(user);
 
         if (user.getIsBookDownloaded() == null) {
             user.setIsBookDownloaded(false);
