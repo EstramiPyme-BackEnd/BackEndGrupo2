@@ -25,6 +25,7 @@ public class AdminController {
     }
 
     // Ver datos de un admin por su ID
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/{id}")
     public ResponseEntity<Admin> getAdminById(@PathVariable Long id) {
         Admin admin = adminService.getAdminById(id);
@@ -46,6 +47,7 @@ public class AdminController {
     }
 
     // Obtener la lista de admins
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping
     public ResponseEntity<List<Admin>> getAllAdmins() {
         return ResponseEntity.ok(adminService.getAllAdmins());
