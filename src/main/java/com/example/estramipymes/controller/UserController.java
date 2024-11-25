@@ -40,7 +40,7 @@ public class UserController {
         return userService.getUser(id);
     }
 
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<List<User>> getUserByEmail(@RequestParam(required = false) String email) {
         if (email != null) {
             User user = userService.getUserByEmail(email);
