@@ -1,7 +1,5 @@
 package com.example.estramipymes.model;
 
-// import java.time.YearMonth;
-
 import com.example.estramipymes.util.EncryptionUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -10,9 +8,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
+
 
 @Entity
 @Data
@@ -59,5 +60,9 @@ public class User {
             throw new RuntimeException("Error decrypting password", e);
         }
     }
+    @ManyToOne
+    @JoinColumn(name = "teacher_id")
+    @JsonIgnore
+    private Teacher teacher;
 }
 
