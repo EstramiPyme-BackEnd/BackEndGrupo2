@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.estramipymes.exception.ResourceNotFoundException;
+import com.example.estramipymes.exception.ServiceResponse;
 import com.example.estramipymes.model.Student;
 import com.example.estramipymes.repository.StudentRepository;
 
@@ -17,53 +17,59 @@ public class StudentService {
     @Autowired
     private StudentRepository studentRepository;
 
-    // @Autowired
-    // private TeacherRepository teacherRepository;
+    // Obtener(GET) lista de Students
+     public List<Student> getAllStudents() {
+        List<Student> students = studentRepository.findAll();
+        return students;
+    }
+    // Obtener (GET)Student por ID
+    public Student getStudent(Long id) {
+        Student student = studentRepository.findById(id).orElse(null);
+        return student;
+    }
 
-    // Crear un estudiante
-    public Student createStudent(Student student) {
+     // Obtener(GET) Student por email
+     public Student getStudentByEmail(String email) {
+        Student student = studentRepository.findByEmail(email);
+        return student;
+    }
+
+    // Crear(POST) Student
+    public ServiceResponse<Student> createStudent(Student student) {
         Student existingStudent = studentRepository.findByEmail(student.getEmail());
-        if (existingStudent != null)
-            return null;
-
-        return studentRepository.save(student);
-    }
-
-    // Obtener los datos de un estudiante por ID
-    public Student getStudentById(Long id) {
-        return studentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with ID: " + id));
-    }
-
-    // Obtener todos los estudiantes
-    public List<Student> getAllStudents() {
-        return studentRepository.findAll();
-    }
-
-    // Actualizar algunos datos del estudiante
-
-    public Student updateStudentPartial(Long id, Student studentDetails) {
-        Student existingStudent = studentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with ID: " + id));
-
-        if (studentDetails.getName() != null) {
-            existingStudent.setName(studentDetails.getName());
-        }
-        if (studentDetails.getEmail() != null) {
-            existingStudent.setEmail(studentDetails.getEmail());
-        }
-        if (studentDetails.getHaceParteProyecto() != null) {
-            existingStudent.setHaceParteProyecto(studentDetails.getHaceParteProyecto());
+        if (existingStudent != null) {
+            return ServiceResponse.error("El correo electrónico '" + student.getEmail() + "' ya está registrado");
         }
 
-        return studentRepository.save(existingStudent);
+        Student savedStudent = studentRepository.save(student);
+        return ServiceResponse.success(savedStudent);
+    }
+    
+
+
+    // Actualizar(PUT) Student por ID
+    public ServiceResponse<Student> updateStudent(Long id, Student student) {
+        Student existingStudent = studentRepository.findById(id).orElse(null);
+
+        if (existingStudent == null) {
+            return ServiceResponse.error("Usuario no encontrado");
+        }
+
+        if (student.getEmail() != null && !student.getEmail().equals(existingStudent.getEmail())) {
+            Student studentWithNewEmail = studentRepository.findByEmail(student.getEmail());
+            if (studentWithNewEmail != null) {
+                return ServiceResponse.error("El correo electrónico '" + student.getEmail() + "' ya está en uso por otro usuario");
+            }
+        }
+
+        existingStudent.setEmail(student.getEmail() == null ? existingStudent.getEmail() : student.getEmail());
+   
+        Student savedStudent = studentRepository.save(existingStudent);
+        return ServiceResponse.success(savedStudent);
     }
 
-    // Eliminar un estudiante por ID
+    // Eliminar(DELETE) Student por ID
     public void deleteStudent(Long id) {
-        if (!studentRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Student not found with ID: " + id);
-        }
         studentRepository.deleteById(id);
     }
 }
