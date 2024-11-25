@@ -27,7 +27,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // Lists all the users (this method is aimed to be used by teachers and admins only)
+    // Lists all the users (this method is aimed to be used by users and admins only)
     // @GetMapping("")
     // public List<User> getAllUsers() {
     //     return userService.getAllUsers();
@@ -39,20 +39,20 @@ public class UserController {
     public User getUser(@PathVariable Long id) {
         return userService.getUser(id);
     }
-
     @GetMapping
-    public ResponseEntity<List<User>> getUserByEmail(@RequestParam(required = false) String email) {
-        if (email != null) {
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> Users = userService.getAllUsers();
+        return ResponseEntity.ok(Users);
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<List<User>> getUserByEmail(@RequestParam(required = false) String email) {       
             User user = userService.getUserByEmail(email);
             if (user != null) {
                 return ResponseEntity.ok(Collections.singletonList(user));
             } else {
                 return ResponseEntity.notFound().build();
             }
-        } else {
-            return ResponseEntity.ok(userService.getAllUsers());
-        }
-
     }
 
     // Creates all the data of a user entity (This expects to receive only name, email and password
