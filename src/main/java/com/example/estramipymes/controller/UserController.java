@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.estramipymes.dto.ApiResponse;
+import com.example.estramipymes.exception.ServiceResponse;
 import com.example.estramipymes.model.User;
 import com.example.estramipymes.service.UserService;
 
@@ -27,67 +29,69 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // Lists all the users (this method is aimed to be used by users and admins only)
-    // @GetMapping("")
-    // public List<User> getAllUsers() {
-    //     return userService.getAllUsers();
-    // }
-
     // Lists a user depending on its id (It is aimed to be available for each user and 
     // show only results associated to their own id)
     @GetMapping("/{id}")
-    public User getUser(@PathVariable Long id) {
-        return userService.getUser(id);
+    public ResponseEntity<?> getData(@PathVariable Long id) {
+        User user = userService.getUser(id);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse("Usuario no encontrado"));
+        }
+        return ResponseEntity.ok(user);
     }
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> Users = userService.getAllUsers();
-        return ResponseEntity.ok(Users);
+    public ResponseEntity<?> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<User>> getUserByEmail(@RequestParam(required = false) String email) {       
-            User user = userService.getUserByEmail(email);
-            if (user != null) {
-                return ResponseEntity.ok(Collections.singletonList(user));
-            } else {
-                return ResponseEntity.notFound().build();
-            }
+    public ResponseEntity<?> getDataByEmail(@RequestParam(required = false) String email) {       
+        User user = userService.getUserByEmail(email);
+        if (user != null) {
+            return ResponseEntity.ok(Collections.singletonList(user));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse("Usuario no encontrado"));
+        }
     }
 
     // Creates all the data of a user entity (This expects to receive only name, email and password
     // the id is auto generated and role_id is set to user)
     @PostMapping()
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User newUser = userService.createUser(user);
-
-        if (newUser == null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-        return new ResponseEntity<>(newUser, HttpStatus.OK);
+    public ResponseEntity<?> createUser(@RequestBody User user) {
+        ServiceResponse<User> response = userService.createUser(user);
         
+        if (!response.isSuccess()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse(response.getMessage()));
+        }
+        
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response.getData());
     }
 
     // Updates any or some data from a user entity
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User user) {
+        ServiceResponse<User> response = userService.updateUser(id, user);
         
-        User updatedUser = userService.updateUser(id, user);
-
-        if (updatedUser == null)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        if (!response.isSuccess()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse(response.getMessage()));
+        }
+        
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response.getData());
     }
 
     // Deletes a whole register of a selected entity (This should work in the front end in any
     // user profile with its id fixed, and for admin, any id available to select)
     @DeleteMapping("/{id}")
-    public ResponseEntity<User> deleteUser(@PathVariable Long id) {
-
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
     
 }

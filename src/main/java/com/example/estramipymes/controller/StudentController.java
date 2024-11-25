@@ -1,5 +1,6 @@
 package com.example.estramipymes.controller;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.estramipymes.dto.ApiResponse;
+import com.example.estramipymes.exception.ServiceResponse;
 import com.example.estramipymes.model.Student;
 import com.example.estramipymes.service.StudentService;
 
@@ -26,34 +30,58 @@ public class StudentController {
 
     // Crear un estudiante
     @PostMapping()
-    public ResponseEntity<Student> createStudent(@RequestBody Student student) {
-        Student newStudent = studentService.createStudent(student);
-
-        if (newStudent == null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-        return new ResponseEntity<>(newStudent, HttpStatus.OK);
+    public ResponseEntity<?> createStudent(@RequestBody Student student) {
+        ServiceResponse<Student> response = studentService.createStudent(student);
         
+        if (!response.isSuccess()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse(response.getMessage()));
+        }
+        
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response.getData());
     }
 
     // Ver los datos de un estudiante por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Student> getStudentById(@PathVariable Long id) {
-        Student student = studentService.getStudentById(id);
+    public ResponseEntity<?> getStudent(@PathVariable Long id) {
+        Student student = studentService.getStudent(id);
+        if (student == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse("Usuario no encontrado"));
+        }
         return ResponseEntity.ok(student);
     }
 
     // Ver todos los estudiantes
     @GetMapping
-    public ResponseEntity<List<Student>> getAllStudents() {
+    public ResponseEntity<?> getAllStudents() {
         List<Student> students = studentService.getAllStudents();
         return ResponseEntity.ok(students);
     }
 
+    @GetMapping("/")
+    public ResponseEntity<?> getStudentByEmail(@RequestParam(required = false) String email) {       
+        Student student = studentService.getStudentByEmail(email);
+        if (student != null) {
+            return ResponseEntity.ok(Collections.singletonList(student));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse("Usuario no encontrado"));
+        }
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<Student> updateStudentPartial(@PathVariable Long id, @RequestBody Student student) {
-        Student updatedStudent = studentService.updateStudentPartial(id, student);
-        return ResponseEntity.ok(updatedStudent);
+    public ResponseEntity<?> updateStudent(@PathVariable Long id, @RequestBody Student student) {
+        ServiceResponse<Student> response = studentService.updateStudent(id, student);
+        
+        if (!response.isSuccess()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse(response.getMessage()));
+        }
+        
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response.getData());
     }
 
     // Eliminar todos los datos del estudiante

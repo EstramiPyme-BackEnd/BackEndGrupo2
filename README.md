@@ -50,6 +50,9 @@ com.example.estramipymes/
 - CORS configuration for local development
 - Automatic registration dates support
 - Environment variables configuration
+- Search users, admins, teachers, and students by email
+- Enhanced error messages for user creation and updates
+- Additional fields for user management (e.g., typeUser, sizeCompany,   sector, registerDate, isBookDownloaded, isTestDone)
 
 ## 📡 Endpoints
 
@@ -64,6 +67,7 @@ com.example.estramipymes/
 ### Administrators
 - `GET /admin` - Get all administrators
 - `GET /admin/{id}` - Get administrator by ID
+- `GET /admin?email={email}` - Search administrator by email
 - `POST /admin` - Create new administrator
 - `PUT /admin/{id}` - Update administrator
 - `DELETE /admin/{id}` - Delete administrator
@@ -71,13 +75,16 @@ com.example.estramipymes/
 ### Teachers
 - `GET /teacher` - Get all teachers
 - `GET /teacher/{id}` - Get teacher by ID
+- `GET /teacher/{email}` - Search teacher by email
 - `POST /teacher` - Create new teacher
 - `PUT /teacher/{id}` - Update teacher
 - `DELETE /teacher/{id}` - Delete teacher
 
+
 ### Students
 - `GET /student` - Get all students
 - `GET /student/{id}` - Get student by ID
+- `GET /student?email={email}` - Search student by email
 - `POST /student` - Create new student
 - `PUT /student/{id}` - Update student
 - `DELETE /student/{id}` - Delete student

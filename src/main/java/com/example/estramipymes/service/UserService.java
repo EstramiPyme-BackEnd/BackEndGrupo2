@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.estramipymes.exception.ServiceResponse;
 import com.example.estramipymes.model.User;
 import com.example.estramipymes.repository.UserRepository;
 import com.example.estramipymes.util.EncryptionUtil;
@@ -62,12 +63,13 @@ public class UserService {
     }
 
     // Create (POST) a new user
-    public User createUser(User user) {
+    public ServiceResponse<User> createUser(User user) {
         User existingUser = userRepository.findByEmail(user.getEmail());
-        if (existingUser != null)
-            return null;
+        if (existingUser != null) {
+            return ServiceResponse.error("El correo electrónico '" + user.getEmail() + "' ya está registrado");
+        }
 
-           assignCurrentFormattedDate(user);
+        assignCurrentFormattedDate(user);
 
         if (user.getIsBookDownloaded() == null) {
             user.setIsBookDownloaded(false);
@@ -76,13 +78,15 @@ public class UserService {
         if (user.getIsTestDone() == null) {
             user.setIsTestDone(false);
         }
-        // Encriptar la contraseña
+
         try {
-            user.setPassword(EncryptionUtil.encrypt(user.getPassword())); // Encriptar contraseña
+            user.setPassword(EncryptionUtil.encrypt(user.getPassword()));
         } catch (Exception e) {
-            throw new RuntimeException("Error encrypting password", e);
+            return ServiceResponse.error("Error al encriptar la contraseña");
         }
-        return userRepository.save(user);
+
+        User savedUser = userRepository.save(user);
+        return ServiceResponse.success(savedUser);
     }
     
     // Remove (DELETE) an existing user
@@ -93,12 +97,19 @@ public class UserService {
 
     // Update (PUT) most of the data of a user entity (this applies both to user and admin)
     //  (Role_id can't be changed as user should always be a user)
-    public User updateUser(Long id, User user) {
-
+    public ServiceResponse<User> updateUser(Long id, User user) {
         User existingUser = userRepository.findById(id).orElse(null);
 
-        if (existingUser == null)
-        return null;
+        if (existingUser == null) {
+            return ServiceResponse.error("Usuario no encontrado");
+        }
+
+        if (user.getEmail() != null && !user.getEmail().equals(existingUser.getEmail())) {
+            User userWithNewEmail = userRepository.findByEmail(user.getEmail());
+            if (userWithNewEmail != null) {
+                return ServiceResponse.error("El correo electrónico '" + user.getEmail() + "' ya está en uso por otro usuario");
+            }
+        }
 
         existingUser.setName(user.getName() == null ? existingUser.getName() : user.getName());
         existingUser.setEmail(user.getEmail() == null ? existingUser.getEmail() : user.getEmail());
@@ -108,13 +119,16 @@ public class UserService {
         existingUser.setRegisterDate(user.getRegisterDate() == null ? existingUser.getRegisterDate() : user.getRegisterDate());
         existingUser.setIsBookDownloaded(user.getIsBookDownloaded() == null ? existingUser.getIsBookDownloaded() : user.getIsBookDownloaded());
         existingUser.setIsTestDone(user.getIsTestDone() == null ? existingUser.getIsTestDone() : user.getIsTestDone());    
+
         if (user.getPassword() != null) {
             try {
                 existingUser.setPassword(EncryptionUtil.encrypt(user.getPassword()));
             } catch (Exception e) {
-                throw new RuntimeException("Error encrypting password", e);
+                return ServiceResponse.error("Error al encriptar la contraseña");
             }
         }
-        return userRepository.save(existingUser);
+
+        User savedUser = userRepository.save(existingUser);
+        return ServiceResponse.success(savedUser);
     }
 }
